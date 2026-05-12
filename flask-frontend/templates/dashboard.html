@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        header {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: #667eea; color: white; }
+        .btn-danger { background: red; color: white; }
+        .btn-success { background: green; color: white; }
+
+        .status-done { color: green; }
+        .status-pending { color: red; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>Task Dashboard</h2>
+    <a href="/logout"><button class="btn-danger">Logout</button></a>
+</header>
+
+<div class="container">
+
+    <!-- ADD TASK -->
+    <div class="card">
+        <h3>Add Task</h3>
+        <form action="/add-task" method="post">
+            <input name="title" placeholder="Title" required>
+            <input name="description" placeholder="Description">
+            <input type="datetime-local" name="deadline">
+            <button class="btn-primary">Add Task</button>
+        </form>
+    </div>
+
+    <!-- TASK LIST -->
+    <h3>Your Tasks</h3>
+
+    {% if tasks|length == 0 %}
+        <p>No tasks yet. Add your first task!</p>
+    {% endif %}
+
+    {% for task in tasks %}
+    <div class="card">
+
+        <h4>{{ task.title }}</h4>
+        <p>{{ task.description }}</p>
+
+        <p><b>Deadline:</b> {{ task.deadline or "No deadline" }}</p>
+
+        <p class="{{ 'status-done' if task.is_done else 'status-pending' }}">
+            {{ "Done" if task.is_done else "Pending" }}
+        </p>
+
+        <!-- UPDATE -->
+        <form action="/update-task/{{ task.id }}" method="post">
+            <input name="title" placeholder="Update Title">
+            <input name="description" placeholder="Update Description">
+            <input type="datetime-local" name="deadline">
+            <label>
+                <input type="checkbox" name="is_done"> Mark as Done
+            </label>
+            <button class="btn-success">Update</button>
+        </form>
+
+        <!-- DELETE -->
+        <a href="/delete-task/{{ task.id }}"
+           onclick="return confirm('Delete this task?')">
+            <button class="btn-danger">Delete</button>
+        </a>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
